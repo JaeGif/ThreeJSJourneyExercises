@@ -12,11 +12,22 @@ const scene = new THREE.Scene();
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 const mesh = new THREE.Mesh(geometry, material);
-mesh.position.x = 0.7;
-mesh.position.y = -0.6;
-mesh.position.z = 1;
+
+mesh.position.set(1, 1, 1);
 scene.add(mesh);
 
+// Axes Helper
+// Debug tool
+
+const axesHelper = new THREE.AxesHelper();
+scene.add(axesHelper);
+
+// Scale
+mesh.scale.set = (1, 1, 1);
+
+// rotation
+mesh.rotation.reorder('YXZ');
+mesh.rotation.y = Math.PI;
 /**
  * Sizes
  */
@@ -29,7 +40,8 @@ const sizes = {
  * Camera
  */
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
-camera.position.z = 3;
+camera.position.set(1, 1, 3);
+
 scene.add(camera);
 
 /**
@@ -38,5 +50,6 @@ scene.add(camera);
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
+
 renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
