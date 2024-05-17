@@ -9,23 +9,10 @@ const image = new Image();
 
 image.src = '/textures/door/color.jpg';
 
-const loadingManager = new THREE.LoadingManager();
-loadingManager.onStart();
 const textureLoader = new THREE.TextureLoader();
-const texture = textureLoader.load(
-  image.src,
-  () => {
-    console.log('load');
-  },
-  () => {
-    console.log('progress');
-  },
-  () => {
-    console.log('error');
-  }
-);
-texture.colorSpace = THREE.SRGBColorSpace;
-
+const colorTexture = textureLoader.load('/textures/door/color.jpg');
+colorTexture.magFilter = THREE.NearestFilter;
+colorTexture.colorSpace = THREE.SRGBColorSpace;
 const canvas = document.querySelector('canvas.webgl');
 
 // Scene
@@ -35,7 +22,7 @@ const scene = new THREE.Scene();
  * Object
  */
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ map: texture });
+const material = new THREE.MeshBasicMaterial({ map: colorTexture });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
