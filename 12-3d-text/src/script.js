@@ -24,22 +24,36 @@ const textureLoader = new THREE.TextureLoader();
 
 const fontLoader = new FontLoader();
 fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
-  const textGeometry = new TextGeometry('I love Callista :)', {
-    font,
-    size: 0.5,
-    height: 0.2,
-    curveSegments: 12,
-    bevelEnabled: true,
-    bevelThickness: 0.03,
-    bevelSize: 0.02,
-    bevelOffset: 0,
-    bevelSegments: 5,
-  });
-  const textMaterial = new THREE.MeshBasicMaterial();
+  const textGeometry = new TextGeometry(
+    "My girlfriend is the best girlfriend in the entire world. She's always there for me and I love and care about her so much.",
+    {
+      font,
+      size: 0.5,
+      height: 0.2,
+      curveSegments: 5,
+      bevelEnabled: true,
+      bevelThickness: 0.03,
+      bevelSize: 0.02,
+      bevelOffset: 0,
+      bevelSegments: 4,
+    }
+  );
+  textGeometry.computeBoundingBox();
+  textGeometry.translate(
+    -(textGeometry.boundingBox.max.x - 0.02) * 0.5,
+    -(textGeometry.boundingBox.max.y - 0.02) * 0.5,
+    -(textGeometry.boundingBox.max.z - 0.03) * 0.5
+  );
+
+  const textMaterial = new THREE.MeshBasicMaterial({ color: 'yellow' });
+  textMaterial.wireframe = true;
   const text = new THREE.Mesh(textGeometry, textMaterial);
+
   scene.add(text);
 });
 
+// AxesHelper
+const axesHelpler = new THREE.AxesHelper();
 /**
  * Object
  */
