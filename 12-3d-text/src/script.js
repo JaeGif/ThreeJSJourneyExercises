@@ -19,7 +19,8 @@ const scene = new THREE.Scene();
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-
+const matcapTexture = textureLoader.load('/textures/matcaps/8.png');
+matcapTexture.colorSpace = THREE.SRGBColorSpace;
 // Fonts
 
 const fontLoader = new FontLoader();
@@ -45,10 +46,27 @@ fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
     -(textGeometry.boundingBox.max.z - 0.03) * 0.5
   );
 
-  const textMaterial = new THREE.MeshBasicMaterial({ color: 'yellow' });
-  textMaterial.wireframe = true;
+  const textMaterial = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
   const text = new THREE.Mesh(textGeometry, textMaterial);
+  const torusGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
+  const torusMaterial = new THREE.MeshMatcapMaterial({
+    matcap: matcapTexture,
+  });
+  for (let i = 0; i < 300; i++) {
+    const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+    torus.position.x = (Math.random() - 0.5) * 30;
+    torus.position.y = (Math.random() - 0.5) * 30;
+    torus.position.z = (Math.random() - 0.5) * 30;
+    torus.rotation.set(
+      Math.random() * Math.PI,
+      Math.random() * Math.PI,
+      Math.random() * Math.PI
+    );
+    const scale = Math.random() * 2;
+    torus.scale.set(scale, scale, scale);
 
+    scene.add(torus);
+  }
   scene.add(text);
 });
 
