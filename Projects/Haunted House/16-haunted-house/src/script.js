@@ -16,13 +16,70 @@ const canvas = document.querySelector('canvas.webgl');
 const scene = new THREE.Scene();
 // units are 1m
 // therefore tetmp width of scene is maybe 10m
+
+// Textures
+const textureLoader = new THREE.TextureLoader();
+// Floor Textures
+const floorAlphaTexture = textureLoader.load('./floor/alpha.jpg');
+const floorColorTexture = textureLoader.load(
+  './floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_diff_1k.jpg'
+);
+const floorARMTexture = textureLoader.load(
+  './floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_arm_1k.jpg'
+);
+const floorNormalTexture = textureLoader.load(
+  './floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_nor_gl_1k.jpg'
+);
+const floorDisplacementTexture = textureLoader.load(
+  './floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_disp_1k.jpg'
+);
+floorColorTexture.repeat.set(8, 8);
+floorColorTexture.wrapS = THREE.RepeatWrapping;
+floorColorTexture.wrapT = THREE.RepeatWrapping;
+floorColorTexture.colorSpace = THREE.SRGBColorSpace;
+
+floorARMTexture.repeat.set(8, 8);
+floorARMTexture.wrapS = THREE.RepeatWrapping;
+floorARMTexture.wrapT = THREE.RepeatWrapping;
+
+floorNormalTexture.repeat.set(8, 8);
+floorNormalTexture.wrapS = THREE.RepeatWrapping;
+floorNormalTexture.wrapT = THREE.RepeatWrapping;
+
+floorDisplacementTexture.repeat.set(8, 8);
+floorDisplacementTexture.wrapS = THREE.RepeatWrapping;
+floorDisplacementTexture.wrapT = THREE.RepeatWrapping;
+
+// Walls
+
+const wallColorTexture = textureLoader.load(
+  './wall/castle_brick_broken_06_1k/castle_brick_broken_06_diff_1k.jpg'
+);
+const wallARMTexture = textureLoader.load(
+  './wall/castle_brick_broken_06_1k/castle_brick_broken_06_arm_1k.jpg'
+);
+const wallNormalTexture = textureLoader.load(
+  './wall/castle_brick_broken_06_1k/castle_brick_broken_06_nor_gl_1k.jpg'
+);
+wallColorTexture.colorSpace = THREE.SRGBColorSpace;
+
 /**
  * House
  */
-// Temporary sphere
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(20, 20),
-  new THREE.MeshStandardMaterial({ roughness: 0.7 })
+  new THREE.PlaneGeometry(20, 20, 100, 100),
+  new THREE.MeshStandardMaterial({
+    alphaMap: floorAlphaTexture,
+    transparent: true,
+    map: floorColorTexture,
+    aoMap: floorARMTexture,
+    normalMap: floorNormalTexture,
+    roughnessMap: floorARMTexture,
+    metalnessMap: floorARMTexture,
+    displacementMap: floorDisplacementTexture,
+    displacementScale: 0.3,
+    displacementBias: -0.2,
+  })
 );
 floor.rotation.x = -Math.PI / 2;
 scene.add(floor);
@@ -48,7 +105,13 @@ const walls = new THREE.Mesh(
     wallDimensions.height,
     wallDimensions.depth
   ),
-  new THREE.MeshStandardMaterial()
+  new THREE.MeshStandardMaterial({
+    map: wallColorTexture,
+    aoMap: wallARMTexture,
+    roughnessMap: wallARMTexture,
+    metalnessMap: wallARMTexture,
+    normalMap: wallNormalTexture,
+  })
 );
 walls.position.y += wallDimensions.height / 2;
 houseGroup.add(walls);
@@ -70,7 +133,13 @@ const rafter = new THREE.Mesh(
     rafterDimensions.width,
     rafterDimensions.depth
   ),
-  new THREE.MeshStandardMaterial()
+  new THREE.MeshStandardMaterial({
+    map: wallColorTexture,
+    aoMap: wallARMTexture,
+    roughnessMap: wallARMTexture,
+    metalnessMap: wallARMTexture,
+    normalMap: wallNormalTexture,
+  })
 );
 rafter.position.y += wallDimensions.height + rafterDimensions.height / 2;
 rafter.rotation.z = Math.PI / 2;
