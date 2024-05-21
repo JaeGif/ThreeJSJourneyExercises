@@ -2,13 +2,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Timer } from 'three/addons/misc/Timer.js';
 import { Sky } from 'three/addons/objects/Sky.js';
-import GUI from 'lil-gui';
 
 /**
  * Base
  */
-// Debug
-const gui = new GUI();
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
