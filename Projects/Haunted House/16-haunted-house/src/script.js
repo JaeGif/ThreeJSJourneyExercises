@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Timer } from 'three/addons/misc/Timer.js';
+import { Sky } from 'three/addons/objects/Sky.js';
 import GUI from 'lil-gui';
 
 /**
@@ -15,7 +16,7 @@ const canvas = document.querySelector('canvas.webgl');
 // Scene
 const scene = new THREE.Scene();
 // units are 1m
-// therefore tetmp width of scene is maybe 10m
+// therefore the width of scene is maybe 10m
 
 // Textures
 const textureLoader = new THREE.TextureLoader();
@@ -162,9 +163,9 @@ scene.add(houseGroup);
 // Walls
 
 const wallDimensions = {
-  width: 4,
-  height: 4,
-  depth: 4,
+  width: 3.5,
+  height: 3.5,
+  depth: 3.5,
 };
 const walls = new THREE.Mesh(
   new THREE.BoxGeometry(
@@ -185,14 +186,14 @@ houseGroup.add(walls);
 
 // Roof
 const roofDimensions = {
-  radius: 3.5,
+  radius: 3,
   height: 1.5,
 };
 // rafter added independently
 const rafterDimensions = {
-  height: 0.5,
-  width: wallDimensions.width + 0.1,
-  depth: wallDimensions.depth + 0.1,
+  height: 0.05,
+  width: roofDimensions.radius * 1.415,
+  depth: roofDimensions.radius * 1.415,
 };
 const rafter = new THREE.Mesh(
   new THREE.BoxGeometry(
@@ -201,14 +202,14 @@ const rafter = new THREE.Mesh(
     rafterDimensions.depth
   ),
   new THREE.MeshStandardMaterial({
-    map: wallColorTexture,
-    aoMap: wallARMTexture,
-    roughnessMap: wallARMTexture,
-    metalnessMap: wallARMTexture,
-    normalMap: wallNormalTexture,
+    map: roofColorTexture,
+    aoMap: roofARMTexture,
+    roughnessMap: roofARMTexture,
+    metalnessMap: roofARMTexture,
+    normalMap: roofNormalTexture,
   })
 );
-rafter.position.y += wallDimensions.height + rafterDimensions.height / 2;
+rafter.position.y += wallDimensions.height;
 rafter.rotation.z = Math.PI / 2;
 
 const roof = new THREE.Mesh(
@@ -318,7 +319,7 @@ const graveMaterial = new THREE.MeshStandardMaterial({
 
 for (let i = 0; i < 30; i++) {
   const angle = Math.random() * 2 * Math.PI;
-  const radius = 4 + Math.random() * 3;
+  const radius = 4 + Math.random() * 5;
   const x = Math.sin(angle) * radius;
   const z = Math.cos(angle) * radius;
   const grave = new THREE.Mesh(graveGeometry, graveMaterial);
@@ -338,11 +339,11 @@ for (let i = 0; i < 30; i++) {
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#86cdff', 0.75);
+const ambientLight = new THREE.AmbientLight('#86cdff', 0.5);
 scene.add(ambientLight);
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight('#86cdff', 1);
+const directionalLight = new THREE.DirectionalLight('#86cdff', 0.75);
 directionalLight.position.set(3, 2, -8);
 scene.add(directionalLight);
 
@@ -406,6 +407,65 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+// Shadows
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+// cast and receive
+
+directionalLight.castShadow = true;
+ghost1.castShadow = true;
+ghost2.castShadow = true;
+ghost3.castShadow = true;
+
+walls.castShadow = true;
+walls.receiveShadow = true;
+roof.castShadow = true;
+roof.receiveShadow = true;
+rafter.castShadow = true;
+rafter.receiveShadow = true;
+floor.receiveShadow = true;
+
+for (const grave of gravesGroup.children) {
+  grave.castShadow = true;
+  grave.receiveShadow = true;
+}
+
+// Mapping
+directionalLight.shadow.mapSize.width = 256;
+directionalLight.shadow.mapSize.height = 256;
+directionalLight.shadow.camera.top = 8;
+directionalLight.shadow.camera.right = 8;
+directionalLight.shadow.camera.bottom = -8;
+directionalLight.shadow.camera.left = -8;
+directionalLight.shadow.camera.near = 1;
+directionalLight.shadow.camera.far = 20;
+
+ghost1.shadow.mapSize.width = 256;
+ghost1.shadow.mapSize.height = 256;
+ghost1.shadow.camera.far = 10;
+
+ghost2.shadow.mapSize.width = 256;
+ghost2.shadow.mapSize.height = 256;
+ghost2.shadow.camera.far = 10;
+
+ghost3.shadow.mapSize.width = 256;
+ghost3.shadow.mapSize.height = 256;
+ghost3.shadow.camera.far = 10;
+
+// sky
+const sky = new Sky();
+sky.scale.setScalar(100);
+scene.add(sky);
+sky.material.uniforms['turbidity'].value = 10;
+sky.material.uniforms['rayleigh'].value = 3;
+sky.material.uniforms['mieCoefficient'].value = 0.1;
+sky.material.uniforms['mieDirectionalG'].value = 0.95;
+sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95);
+
+// Fog
+
+scene.fog = new THREE.FogExp2('#02343f', 0.1);
 /**
  * Animate
  */
@@ -446,6 +506,7 @@ const tick = () => {
   );
 
   // Render
+
   renderer.render(scene, camera);
 
   // Call tick again on the next frame
