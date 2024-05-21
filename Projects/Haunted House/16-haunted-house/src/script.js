@@ -339,11 +339,11 @@ for (let i = 0; i < 30; i++) {
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#86cdff', 0.5);
+const ambientLight = new THREE.AmbientLight('#86cdff', 0.7);
 scene.add(ambientLight);
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight('#86cdff', 0.75);
+const directionalLight = new THREE.DirectionalLight('#86cdff', 1);
 directionalLight.position.set(3, 2, -8);
 scene.add(directionalLight);
 
