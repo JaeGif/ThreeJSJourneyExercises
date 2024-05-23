@@ -153,6 +153,7 @@ window.addEventListener('scroll', () => {
       ease: 'power2.inOut',
       x: '+=3',
       y: '+=1',
+      z: '+=1',
     });
   }
 });
