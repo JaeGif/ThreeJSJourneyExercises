@@ -64,6 +64,7 @@ const generateGalaxy = () => {
   blackHoleMaterial = new THREE.MeshStandardMaterial({
     map: blackHoleTexture,
     color: parameters.insideColor,
+    side: THREE.DoubleSide,
   });
 
   blackHole = new THREE.Mesh(blackHoleGeometry, blackHoleMaterial);
