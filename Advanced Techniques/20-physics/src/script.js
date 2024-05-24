@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import GUI from 'lil-gui';
-import CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 
 /**
  * Debug
@@ -15,7 +15,20 @@ debugObject.createBoxes = () => {
     z: (Math.random() - 0.5) * 3,
   });
 };
+debugObject.reset = () => {
+  // loop objs
+  for (const obj of objectsToUpdate) {
+    obj.body.removeEventListener('collide', playHitSound);
+    world.removeBody(obj.body);
+
+    // remove mesh
+    scene.remove(obj.mesh);
+  }
+  objectsToUpdate.splice(0, objectsToUpdate.length);
+};
 gui.add(debugObject, 'createBoxes');
+gui.add(debugObject, 'reset');
+
 /**
  * Base
  */
@@ -28,6 +41,18 @@ const scene = new THREE.Scene();
 /**
  * Textures
  */
+// sounds
+const hitSound = new Audio('/sounds/hit.mp3');
+
+const playHitSound = (collision) => {
+  const impactStength = collision.contact.getImpactVelocityAlongNormal();
+
+  if (impactStength > 1.5) {
+    hitSound.volume = Math.random();
+    hitSound.currentTime = 0;
+    hitSound.play();
+  }
+};
 const textureLoader = new THREE.TextureLoader();
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 
@@ -46,7 +71,12 @@ const environmentMapTexture = cubeTextureLoader.load([
 // world is an extra dimension that mimics the threejs world
 
 const world = new CANNON.World();
+world.allowSleep = true;
+
 // 9.82 is the gravity constant
+world.broadphase = new CANNON.SAPBroadphase(world);
+// broadphase is the alogirthm chosen to test whether objects have collision
+// can sleep objects that aren't moving
 
 const GRAV_ACCELERATION = -9.82;
 world.gravity.set(0, GRAV_ACCELERATION, 0);
@@ -205,7 +235,9 @@ const createBoxes = (width, depth, height, position) => {
     shape,
     material: defaultMaterial,
   });
+
   body.position.copy(position);
+  body.addEventListener('collide', playHitSound);
   world.addBody(body);
 
   // save in objs to update
