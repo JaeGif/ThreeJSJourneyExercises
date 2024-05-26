@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import GUI from 'lil-gui';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
 /**
  * Base
@@ -105,11 +107,31 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+// lights
+const ambientLight = new THREE.AmbientLight('#ff0', 3);
+scene.add(ambientLight);
+
+// Model Loaders
+
+const gltfLoader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('/draco/');
+
+gltfLoader.setDRACOLoader(dracoLoader);
+let model = null;
+gltfLoader.load('./models/Duck/glTF-Draco/Duck.gltf', (gltf) => {
+  model = gltf.scene;
+  model.position.y = -1.2;
+  scene.add(model);
+});
+
 /**
  * Animate
  */
 const clock = new THREE.Clock();
 let currentIntersection = null;
+let intersections = null;
+
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
@@ -120,23 +142,21 @@ const tick = () => {
   object3.position.y = Math.sin(elapsedTime + Math.PI / 2);
   raycaster.setFromCamera(mouse, camera);
 
-  const intersections = raycaster.intersectObjects(objectsToTest);
+  if (model) {
+    intersections = raycaster.intersectObject(model);
 
-  for (const object of objectsToTest) {
-    object.material.color.set('#ff0000');
+    if (intersections.length) {
+      // something is hovered, get only first one
+      if (currentIntersection === null) {
+        // mouse entered
+        currentIntersection = intersections[0];
+        model.scale.set(2, 2, 2);
+      }
+    } else {
+      model.scale.set(1, 1, 1);
+      currentIntersection = null;
+    } // mouse left
   }
-  for (const intersection of intersections) {
-    intersection.object.material.color.set('#0000ff');
-  }
-
-  if (intersections.length) {
-    // something is hovered, get only first one
-    if (currentIntersection === null) {
-      // mouse entered
-      currentIntersection = intersections[0];
-    }
-  } else currentIntersection = null; // mouse left
-
   // Update controls
   controls.update();
 
