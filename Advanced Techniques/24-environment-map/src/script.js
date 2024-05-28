@@ -42,11 +42,24 @@ scene.environment = environmentMap;
 // hdris contain a 360 view of the scene
 // needs an rgbe loader (how hdrs are encoded)
 
+const textureLoader = new THREE.TextureLoader();
+const environmentMap = textureLoader.load(
+  '/environmentMaps/blockadesLabsSkybox/anime_art_style_japan_streets_with_cherry_blossom_.jpg'
+);
+
+environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+environmentMap.colorSpace = THREE.SRGBColorSpace;
+scene.background = environmentMap;
+scene.environment = environmentMap;
+
+/* ;
+
 const rgbeLoader = new RGBELoader();
 rgbeLoader.load('./environmentMaps/blender-2k.hdr', (environmentMap) => {
   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
   scene.environment = environmentMap;
 });
+ */
 
 gui.add(scene, 'environmentIntensity').min(0).max(10).step(0.001);
 gui.add(scene, 'backgroundBlurriness').min(0).max(1).step(0.001);
