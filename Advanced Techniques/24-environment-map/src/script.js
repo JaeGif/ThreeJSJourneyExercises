@@ -43,9 +43,8 @@ scene.environment = environmentMap;
 // needs an rgbe loader (how hdrs are encoded)
 
 const rgbeLoader = new RGBELoader();
-rgbeLoader.load('./environmentMaps/0/2k.hdr', (environmentMap) => {
+rgbeLoader.load('./environmentMaps/blender-2k.hdr', (environmentMap) => {
   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-  scene.background = environmentMap;
   scene.environment = environmentMap;
 });
 
