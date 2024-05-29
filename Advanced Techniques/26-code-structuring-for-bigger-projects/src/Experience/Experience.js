@@ -1,8 +1,17 @@
 import Sizes from './Utils/Sizes';
 import Time from './Utils/Time';
+import Camera from './Camera';
+import * as THREE from 'three';
 
+let instance = null;
+// Experience is a Singleton
 export default class Experience {
   constructor(canvas) {
+    // singleton pattern
+    if (instance) return instance;
+    instance = this;
+
+    // FIRST INSTANTIATION
     // provides global access to the experience
     window.experience = this;
     // options
@@ -11,9 +20,19 @@ export default class Experience {
     // setup
     this.sizes = new Sizes();
     this.time = new Time();
+    this.scene = new THREE.Scene();
+    this.camera = new Camera();
+    // resize event
     this.sizes.on('resize', () => {
       this.resize();
     });
+
+    // tick event
+
+    this.time.on('tick', () => {
+      this.update();
+    });
   }
   resize() {}
+  update() {}
 }
