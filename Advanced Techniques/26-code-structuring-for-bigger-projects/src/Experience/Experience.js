@@ -1,6 +1,8 @@
 import Sizes from './Utils/Sizes';
 import Time from './Utils/Time';
 import Camera from './Camera';
+import Renderer from './Renderer';
+import World from '../World/World';
 import * as THREE from 'three';
 
 let instance = null;
@@ -22,6 +24,8 @@ export default class Experience {
     this.time = new Time();
     this.scene = new THREE.Scene();
     this.camera = new Camera();
+    this.renderer = new Renderer();
+    this.world = new World();
     // resize event
     this.sizes.on('resize', () => {
       this.resize();
@@ -33,6 +37,13 @@ export default class Experience {
       this.update();
     });
   }
-  resize() {}
-  update() {}
+  resize() {
+    this.camera.resize();
+    this.renderer.resize();
+  }
+  update() {
+    // ORDER MATTERS
+    this.camera.update();
+    this.renderer.update();
+  }
 }
