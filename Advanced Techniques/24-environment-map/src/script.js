@@ -121,6 +121,7 @@ scene.add(ambientLight); */
 /**
  * Torus Knot
  */
+
 const torusKnot = new THREE.Mesh(
   new THREE.TorusKnotGeometry(1, 0.4, 100, 16),
   new THREE.MeshStandardMaterial({
