@@ -7,7 +7,10 @@ export default class World {
     this.experience = new Experience();
     this.scene = this.experience.scene;
 
-    // setup env
-    this.environment = new Environment();
+    this.resources = this.experience.resources;
+    this.resources.on('ready', () => {
+      // setup env after resources are ready
+      this.environment = new Environment();
+    });
   }
 }
