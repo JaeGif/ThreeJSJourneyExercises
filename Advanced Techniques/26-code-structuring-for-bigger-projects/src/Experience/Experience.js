@@ -6,6 +6,7 @@ import World from '../World/World';
 import * as THREE from 'three';
 import Resources from './Utils/Resources';
 import sources from './sources';
+import Debug from './Utils/Debug';
 
 let instance = null;
 // Experience is a Singleton
@@ -22,6 +23,7 @@ export default class Experience {
     this.canvas = canvas;
 
     // setup
+    this.debug = new Debug();
     this.sizes = new Sizes();
     this.time = new Time();
     this.scene = new THREE.Scene();
