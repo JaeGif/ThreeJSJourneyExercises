@@ -20,22 +20,42 @@ const scene = new THREE.Scene();
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
+const flagTexture = textureLoader.load('/textures/flag-french.jpg');
+/*
 
-/**
  * Test mesh
  */
 // Geometry
-const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
+const geometry = new THREE.PlaneGeometry(1, 1, 64, 64);
 
+const count = geometry.attributes.position.count;
+const randoms = new Float32Array(count);
+for (let i = 0; i < count; i++) {
+  randoms[i] = Math.random();
+}
+// a u v, attribute, uniform, varying
+geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+geometry.scale = 2 / 3;
 // Material
 // raw shader material requires a vertex and fragment shader
-const material = new THREE.RawShaderMaterial({
+const material = new THREE.ShaderMaterial({
   vertexShader: testVertexShader,
   fragmentShader: testFragmentShader,
+  uniforms: {
+    uFrequency: { value: new THREE.Vector2(10, 5) },
+    uTime: { value: 0 },
+    uColor: { value: new THREE.Color('orange') },
+    uTexture: { value: flagTexture },
+  },
+  side: 2,
 });
+
+gui.add(material.uniforms.uFrequency.value, 'x').min(0).max(20).step(0.001);
+gui.add(material.uniforms.uFrequency.value, 'y').min(0).max(20).step(0.001);
 
 // Mesh
 const mesh = new THREE.Mesh(geometry, material);
+
 scene.add(mesh);
 
 /**
@@ -83,6 +103,7 @@ controls.enableDamping = true;
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
+
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -97,6 +118,8 @@ const tick = () => {
   // Update controls
   controls.update();
 
+  // materials
+  material.uniforms.uTime.value = elapsedTime;
   // Render
   renderer.render(scene, camera);
 

@@ -1,0 +1,12 @@
+- glsl is c-adjacent, but no access to cpu resources
+- glsl is typed, types are declared before vars
+- integers and floats are different
+
+- cannot mix ints and floats, so typically use 
+    floats for operations
+
+types:
+float
+int
+bool
+vec2
