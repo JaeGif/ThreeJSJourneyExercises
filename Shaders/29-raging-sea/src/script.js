@@ -23,7 +23,7 @@ const scene = new THREE.Scene();
  * Water
  */
 // Geometry
-const waterGeometry = new THREE.PlaneGeometry(2, 2, 512, 512);
+const waterGeometry = new THREE.PlaneGeometry(2, 2, 1024, 1024);
 
 // Material
 const waterMaterial = new THREE.ShaderMaterial({
@@ -38,7 +38,7 @@ const waterMaterial = new THREE.ShaderMaterial({
     uSmallWavesElevation: { value: 0.125 },
     uSmallWavesFrequency: { value: 3.0 },
     uSmallWavesSpeed: { value: 0.3 },
-    uSmallWavesIterations: { value: 5 },
+    uSmallWavesIterations: { value: 4 },
 
     uDepthColor: { value: new THREE.Color(debugObject.depthColor) },
     uSurfaceColor: { value: new THREE.Color(debugObject.surfaceColor) },
