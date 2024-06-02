@@ -38,7 +38,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const parameters = {};
 parameters.count = 200000;
-parameters.size = 8 * renderer.getPixelRatio();
+parameters.size = 10 * renderer.getPixelRatio();
 parameters.radius = 5;
 parameters.branches = 3;
 parameters.spin = 1;
@@ -50,6 +50,12 @@ parameters.outsideColor = '#1b3984';
 let geometry = null;
 let material = null;
 let points = null;
+
+const sphere = new THREE.Mesh(
+  new THREE.SphereGeometry(0.0001, 32, 32),
+  new THREE.MeshBasicMaterial({ color: 'black' })
+);
+scene.add(sphere);
 
 const generateGalaxy = () => {
   if (points !== null) {
@@ -66,7 +72,7 @@ const generateGalaxy = () => {
   const positions = new Float32Array(parameters.count * 3);
   const colors = new Float32Array(parameters.count * 3);
   const scales = new Float32Array(parameters.count * 1); // 1 scale per vertex
-
+  const randomnessA = new Float32Array(parameters.count * 3);
   const insideColor = new THREE.Color(parameters.insideColor);
   const outsideColor = new THREE.Color(parameters.outsideColor);
 
@@ -79,6 +85,11 @@ const generateGalaxy = () => {
     const branchAngle =
       ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
 
+    positions[i3] = Math.cos(branchAngle) * radius;
+    positions[i3 + 1] = 0;
+    positions[i3 + 2] = Math.sin(branchAngle) * radius;
+
+    // randomness
     const randomX =
       Math.pow(Math.random(), parameters.randomnessPower) *
       (Math.random() < 0.5 ? 1 : -1) *
@@ -95,9 +106,9 @@ const generateGalaxy = () => {
       parameters.randomness *
       radius;
 
-    positions[i3] = Math.cos(branchAngle) * radius + randomX;
-    positions[i3 + 1] = randomY;
-    positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ;
+    randomnessA[i3] = randomX;
+    randomnessA[i3 + 1] = randomY;
+    randomnessA[i3 + 2] = randomZ;
 
     // Color
     const mixedColor = insideColor.clone();
@@ -114,6 +125,10 @@ const generateGalaxy = () => {
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   geometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
+  geometry.setAttribute(
+    'aRandomness',
+    new THREE.BufferAttribute(randomnessA, 3)
+  );
   /**
    * Material
    */
@@ -125,6 +140,7 @@ const generateGalaxy = () => {
     vertexColors: true,
     uniforms: {
       uSize: { value: parameters.size },
+      uTime: { value: 0 },
     },
   });
 
@@ -220,6 +236,11 @@ const tick = () => {
   // Update controls
   controls.update();
 
+  // update material
+  material.uniforms.uTime.value = elapsedTime;
+
+  // increase size of black hole for a full minute;
+  if (elapsedTime <= 60) sphere.scale.addScalar(Math.pow(elapsedTime, 0.25));
   // Render
   renderer.render(scene, camera);
 
