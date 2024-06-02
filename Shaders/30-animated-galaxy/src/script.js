@@ -7,20 +7,38 @@ import fragmentShader from './shaders/galaxy/fragment.glsl';
  * Base
  */
 // Debug
-const gui = new GUI();
+let gui;
+if (window.location.hash === '#debug') gui = new GUI();
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
 
 // Scene
 const scene = new THREE.Scene();
+/**
+ * Sizes
+ */
+const sizes = {
+  width: window.innerWidth,
+  height: window.innerHeight + 1,
+};
+
+/**
+ * Renderer
+ */
+const renderer = new THREE.WebGLRenderer({
+  canvas: canvas,
+});
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
  * Galaxy
  */
+
 const parameters = {};
 parameters.count = 200000;
-parameters.size = 0.005;
+parameters.size = 8 * renderer.getPixelRatio();
 parameters.radius = 5;
 parameters.branches = 3;
 parameters.spin = 1;
@@ -47,6 +65,7 @@ const generateGalaxy = () => {
 
   const positions = new Float32Array(parameters.count * 3);
   const colors = new Float32Array(parameters.count * 3);
+  const scales = new Float32Array(parameters.count * 1); // 1 scale per vertex
 
   const insideColor = new THREE.Color(parameters.insideColor);
   const outsideColor = new THREE.Color(parameters.outsideColor);
@@ -87,11 +106,14 @@ const generateGalaxy = () => {
     colors[i3] = mixedColor.r;
     colors[i3 + 1] = mixedColor.g;
     colors[i3 + 2] = mixedColor.b;
+
+    // scales - randomize the stars sizes with a scalar range[0, 1]
+    scales[i] = Math.random();
   }
 
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
+  geometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
   /**
    * Material
    */
@@ -101,6 +123,9 @@ const generateGalaxy = () => {
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     vertexColors: true,
+    uniforms: {
+      uSize: { value: parameters.size },
+    },
   });
 
   /**
@@ -110,48 +135,46 @@ const generateGalaxy = () => {
   scene.add(points);
 };
 
-generateGalaxy();
-
-gui
-  .add(parameters, 'count')
-  .min(100)
-  .max(1000000)
-  .step(100)
-  .onFinishChange(generateGalaxy);
-gui
-  .add(parameters, 'radius')
-  .min(0.01)
-  .max(20)
-  .step(0.01)
-  .onFinishChange(generateGalaxy);
-gui
-  .add(parameters, 'branches')
-  .min(2)
-  .max(20)
-  .step(1)
-  .onFinishChange(generateGalaxy);
-gui
-  .add(parameters, 'randomness')
-  .min(0)
-  .max(2)
-  .step(0.001)
-  .onFinishChange(generateGalaxy);
-gui
-  .add(parameters, 'randomnessPower')
-  .min(1)
-  .max(10)
-  .step(0.001)
-  .onFinishChange(generateGalaxy);
-gui.addColor(parameters, 'insideColor').onFinishChange(generateGalaxy);
-gui.addColor(parameters, 'outsideColor').onFinishChange(generateGalaxy);
-
-/**
- * Sizes
- */
-const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight + 1,
-};
+if (gui) {
+  gui
+    .add(parameters, 'count')
+    .min(100)
+    .max(1000000)
+    .step(100)
+    .onFinishChange(generateGalaxy);
+  gui
+    .add(parameters, 'size')
+    .min(0.001)
+    .max(10)
+    .step(0.001)
+    .onFinishChange(generateGalaxy);
+  gui
+    .add(parameters, 'radius')
+    .min(0.01)
+    .max(20)
+    .step(0.01)
+    .onFinishChange(generateGalaxy);
+  gui
+    .add(parameters, 'branches')
+    .min(2)
+    .max(20)
+    .step(1)
+    .onFinishChange(generateGalaxy);
+  gui
+    .add(parameters, 'randomness')
+    .min(0)
+    .max(2)
+    .step(0.001)
+    .onFinishChange(generateGalaxy);
+  gui
+    .add(parameters, 'randomnessPower')
+    .min(1)
+    .max(10)
+    .step(0.001)
+    .onFinishChange(generateGalaxy);
+  gui.addColor(parameters, 'insideColor').onFinishChange(generateGalaxy);
+  gui.addColor(parameters, 'outsideColor').onFinishChange(generateGalaxy);
+}
 
 window.addEventListener('resize', () => {
   // Update sizes
@@ -187,15 +210,6 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 /**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
-});
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-/**
  * Animate
  */
 const clock = new THREE.Clock();
@@ -212,5 +226,5 @@ const tick = () => {
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
 };
-
+generateGalaxy();
 tick();
