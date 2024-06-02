@@ -239,8 +239,8 @@ const tick = () => {
   // update material
   material.uniforms.uTime.value = elapsedTime;
 
-  // increase size of black hole for a full minute;
-  if (elapsedTime <= 60) sphere.scale.addScalar(Math.pow(elapsedTime, 0.25));
+  // gradually increase size of black hole for 3 minutes;
+  if (elapsedTime <= 180) sphere.scale.addScalar(Math.pow(elapsedTime, 0.25));
   // Render
   renderer.render(scene, camera);
 
