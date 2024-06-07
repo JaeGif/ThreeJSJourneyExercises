@@ -24,11 +24,11 @@ const scene = new THREE.Scene();
  * Water
  */
 // Geometry
-const waterGeometry = new THREE.PlaneGeometry(2, 2, 512, 512);
+const waterGeometry = new THREE.PlaneGeometry(2, 2, 1024, 1024);
 
 // Colors
-debugObject.depthColor = '#186691';
-debugObject.surfaceColor = '#9bd8ff';
+debugObject.depthColor = '#ff4000';
+debugObject.surfaceColor = '#151c37';
 if (gui) {
   gui.addColor(debugObject, 'depthColor').onChange(() => {
     waterMaterial.uniforms.uDepthColor.value.set(debugObject.depthColor);
@@ -55,8 +55,8 @@ const waterMaterial = new THREE.ShaderMaterial({
 
     uDepthColor: { value: new THREE.Color(debugObject.depthColor) },
     uSurfaceColor: { value: new THREE.Color(debugObject.surfaceColor) },
-    uColorOffset: { value: 0.08 },
-    uColorMultiplier: { value: 5 },
+    uColorOffset: { value: 0.925 },
+    uColorMultiplier: { value: 1 },
   },
 });
 if (gui) {

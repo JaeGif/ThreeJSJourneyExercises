@@ -5,6 +5,11 @@ uniform float uColorMultiplier;
 
 varying float vElevation;
 
+#include ../includes/directionalLight.glsl
+#include ../includes/pointLight.glsl
+#include ../includes/ambientLight.glsl
+
+
 void main()
 {
     float mixStrength = (vElevation + uColorOffset) * uColorMultiplier;
