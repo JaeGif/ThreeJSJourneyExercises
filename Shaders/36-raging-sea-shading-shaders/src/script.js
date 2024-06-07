@@ -24,7 +24,12 @@ const scene = new THREE.Scene();
  * Water
  */
 // Geometry
-const waterGeometry = new THREE.PlaneGeometry(2, 2, 1024, 1024);
+const waterGeometry = new THREE.PlaneGeometry(2, 2, 512, 512);
+waterGeometry.deleteAttribute('normal');
+waterGeometry.deleteAttribute('uv');
+
+// since we don't need the normal of the plane and compute normals ourselves,
+// free some memory by deleting the original normals
 
 // Colors
 debugObject.depthColor = '#ff4000';
@@ -174,6 +179,7 @@ controls.enableDamping = true;
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
