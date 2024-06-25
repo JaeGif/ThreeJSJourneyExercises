@@ -3,6 +3,9 @@ import {
   PivotControls,
   TransformControls,
   Html,
+  Text,
+  Float,
+  MeshReflectorMaterial,
 } from '@react-three/drei';
 import { useRef } from 'react';
 
@@ -44,9 +47,27 @@ export default function Experience() {
 
       <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
         <planeGeometry />
-        <meshStandardMaterial color='greenyellow' />
+        <MeshReflectorMaterial
+          resolution={2048}
+          blur={[1000, 1000]}
+          mixBlur={1}
+          mirror={1}
+          color={'greenyellow'}
+        />
       </mesh>
 
+      <Float speed={5}>
+        <Text
+          position-y={2}
+          textAlign='center'
+          maxWidth={2}
+          fontSize={0.5}
+          font='./bangers-v20-latin-regular.woff'
+        >
+          I love Callista
+          <meshNormalMaterial />
+        </Text>
+      </Float>
       {/* Controls */}
       <OrbitControls makeDefault />
       <TransformControls object={cubeRef} />
