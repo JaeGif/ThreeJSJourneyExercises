@@ -1,24 +1,36 @@
 import { OrbitControls } from '@react-three/drei';
-import { useControls } from 'leva';
+import { button, useControls } from 'leva';
+import { Perf } from 'r3f-perf';
 
 export default function Experience() {
-  const { position } = useControls({
+  const { position, color } = useControls({
     position: {
-      value: { x: -2, y: 0 },
-
+      value: { x: -2, y: 0, z: 0 },
       step: 0.001,
     },
+    color: '#ff0000',
+    visible: true,
+    interval: {
+      min: 0,
+      max: 10,
+      value: [4, 6],
+    },
+    clickMe: button(() => {
+      console.log('hi');
+    }),
   });
+
   return (
     <>
+      <Perf position='top-left' />
       <OrbitControls makeDefault />
 
       <directionalLight position={[1, 2, 3]} intensity={4.5} />
       <ambientLight intensity={1.5} />
 
-      <mesh position={[position.x, position.y, 0]}>
+      <mesh position={[position.x, position.y, position.z]}>
         <sphereGeometry />
-        <meshStandardMaterial color='orange' />
+        <meshStandardMaterial color={color} />
       </mesh>
 
       <mesh position-x={2} scale={1.5}>
