@@ -12,7 +12,7 @@ function Fox() {
 
   useEffect(() => {
     const action = animations.actions[animationName];
-    action.fadeIn(0.5).play();
+    action.reset().fadeIn(0.5).play();
 
     return () => {
       action.fadeOut(0.5).play();
