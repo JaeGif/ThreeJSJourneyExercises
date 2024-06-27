@@ -6,6 +6,10 @@ function Fox() {
 
   useEffect(() => {
     const action = animations.actions.Run;
+    window.setTimeout(() => {
+      animations.actions.Walk.play();
+      animations.actions.Walk.crossFadeFrom(animations.actions.Run, 1);
+    }, 2000);
     action.play();
   }, []);
 
