@@ -1,20 +1,21 @@
+// import Model from './Model';
 import SceneAdditions from './SceneAdditions';
-import { useLoader } from '@react-three/fiber';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { Suspense } from 'react';
+import SuspenseModel from './SuspenseModel';
+import { Model } from './Hamburger';
+import Fox from './Fox';
 
 export default function Experience() {
-  const model = useLoader(GLTFLoader, './hamburger-draco.glb', (loader) => {
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('./draco/');
-    loader.setDRACOLoader(dracoLoader);
-  });
-
   return (
     <>
       <SceneAdditions />
 
-      <directionalLight castShadow position={[1, 2, 3]} intensity={4.5} />
+      <directionalLight
+        shadow-normalBias={0.04}
+        castShadow
+        position={[1, 2, 3]}
+        intensity={4.5}
+      />
       <ambientLight intensity={1.5} />
 
       <mesh
@@ -27,7 +28,17 @@ export default function Experience() {
         <meshStandardMaterial color='greenyellow' />
       </mesh>
 
-      <primitive object={model.scene} />
+      <Suspense
+        fallback={
+          <SuspenseModel
+            position-y={0.5}
+            color={'aquamarine'}
+            scale={[2, 3, 2]}
+          />
+        }
+      >
+        <Fox />
+      </Suspense>
     </>
   );
 }
