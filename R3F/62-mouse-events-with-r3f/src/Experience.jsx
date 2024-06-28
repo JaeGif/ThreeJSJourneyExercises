@@ -1,37 +1,55 @@
-import { useFrame } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
-import { useRef } from 'react'
+import { useFrame } from '@react-three/fiber';
+import { OrbitControls, meshBounds, useGLTF } from '@react-three/drei';
+import { useRef } from 'react';
+import { Perf } from 'r3f-perf';
+import * as THREE from 'three';
 
-export default function Experience()
-{
-    const cube = useRef()
-    
-    useFrame((state, delta) =>
-    {
-        cube.current.rotation.y += delta * 0.2
-    })
+export default function Experience() {
+  const cube = useRef();
 
-    return <>
+  const model = useGLTF('./hamburger.glb');
 
-        <OrbitControls makeDefault />
+  useFrame((state, delta) => {
+    cube.current.rotation.y += delta * 0.2;
+  });
 
-        <directionalLight position={ [ 1, 2, 3 ] } intensity={ 4.5 } />
-        <ambientLight intensity={ 1.5 } />
+  const eventHandler = () => {
+    console.log('event');
+  };
 
-        <mesh position-x={ - 2 }>
-            <sphereGeometry />
-            <meshStandardMaterial color="orange" />
-        </mesh>
+  return (
+    <>
+      <Perf position='top-left' />
 
-        <mesh ref={ cube } position-x={ 2 } scale={ 1.5 }>
-            <boxGeometry />
-            <meshStandardMaterial color="mediumpurple" />
-        </mesh>
+      <OrbitControls makeDefault />
 
-        <mesh position-y={ - 1 } rotation-x={ - Math.PI * 0.5 } scale={ 10 }>
-            <planeGeometry />
-            <meshStandardMaterial color="greenyellow" />
-        </mesh>
+      <directionalLight position={[1, 2, 3]} intensity={4.5} />
+      <ambientLight intensity={1.5} />
 
+      <mesh position-x={-2}>
+        <sphereGeometry />
+        <meshStandardMaterial color='orange' />
+      </mesh>
+
+      <mesh
+        raycast={meshBounds}
+        ref={cube}
+        position-x={2}
+        scale={1.5}
+        onPointerEnter={eventHandler}
+        onPointerLeave={eventHandler}
+      >
+        {' '}
+        <boxGeometry />
+        <meshStandardMaterial color='mediumpurple' />
+      </mesh>
+
+      <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
+        <planeGeometry />
+        <meshStandardMaterial color='greenyellow' />
+      </mesh>
+
+      <primitive object={model.scene} scale={0.25} position={[0, 0.5, 0]} />
     </>
+  );
 }
