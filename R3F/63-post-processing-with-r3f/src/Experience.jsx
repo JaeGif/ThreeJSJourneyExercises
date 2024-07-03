@@ -11,8 +11,11 @@ import {
 } from '@react-three/postprocessing';
 import { GlitchMode, ToneMappingMode } from 'postprocessing';
 import { BlendFunction } from 'postprocessing';
+import Drunk from './Drunk';
+import { useRef } from 'react';
 
 export default function Experience() {
+  const drunkRef = useRef();
   return (
     <>
       <color args={['#ffffff']} attach={'background'} />
@@ -32,11 +35,13 @@ export default function Experience() {
         <Noise blendFunction={BlendFunction.SOFT_LIGHT} premultiply /> */}
         {/*         <Bloom mipmapBlur luminanceThreshold={1.1} />
          */}
-        <DepthOfField
+        {/*         <DepthOfField
           focusDistance={0.025}
           focalLength={0.025}
           bokehScale={6}
-        />
+        /> */}
+        <Drunk frequency={2} amplitude={0.1} ref={drunkRef} />
+
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
       </EffectComposer>
       <Perf position='top-left' />
